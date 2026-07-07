@@ -35,28 +35,39 @@ export default function ProductTable({ products, pagination, role, onPageChange,
             </tr>
           </thead>
           <tbody>
-            {products.map((p) => (
-              <tr key={p._id} className="border-b border-border last:border-0">
-                <td className="p-3">
-                  <img src={`${API_BASE}${p.imageUrl}`} alt={p.name} className="h-10 w-10 rounded object-cover" />
-                </td>
-                <td className="p-3 font-medium">{p.name}</td>
-                <td className="p-3">{p.sku}</td>
-                <td className="p-3">{p.category}</td>
-                <td className="p-3">{formatCurrency(p.sellingPrice)}</td>
-                <td className="p-3">
-                  <span className={p.stockQuantity < 5 ? 'text-amber-600 font-medium' : ''}>{p.stockQuantity}</span>
-                </td>
-                <td className="p-3 space-x-2">
-                  {canUpdate && (
-                    <Button size="sm" variant="outline" onClick={() => onEdit(p)}>{labels.products.editBtn}</Button>
-                  )}
-                  {canDelete && (
-                    <Button size="sm" variant="destructive" onClick={() => onDelete(p._id)}>{labels.products.deleteBtn}</Button>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {products.map((p) => {
+              const raw = p.imageUrl || '';
+              let imgSrc = raw;
+              if ((imgSrc.startsWith('https//') || imgSrc.startsWith('http//')) && !imgSrc.includes('://')) {
+                imgSrc = imgSrc.replace(/^(https?)\/\//, '$1://');
+              }
+              if (!(imgSrc.startsWith('http') || imgSrc.startsWith('//'))) {
+                imgSrc = `${API_BASE}${imgSrc}`;
+              }
+
+              return (
+                <tr key={p._id} className="border-b border-border last:border-0">
+                  <td className="p-3">
+                    <img src={imgSrc} alt={p.name} className="h-10 w-10 rounded object-cover" />
+                  </td>
+                  <td className="p-3 font-medium">{p.name}</td>
+                  <td className="p-3">{p.sku}</td>
+                  <td className="p-3">{p.category}</td>
+                  <td className="p-3">{formatCurrency(p.sellingPrice)}</td>
+                  <td className="p-3">
+                    <span className={p.stockQuantity < 5 ? 'text-amber-600 font-medium' : ''}>{p.stockQuantity}</span>
+                  </td>
+                  <td className="p-3 space-x-2">
+                    {canUpdate && (
+                      <Button size="sm" variant="outline" onClick={() => onEdit(p)}>{labels.products.editBtn}</Button>
+                    )}
+                    {canDelete && (
+                      <Button size="sm" variant="destructive" onClick={() => onDelete(p._id)}>{labels.products.deleteBtn}</Button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
